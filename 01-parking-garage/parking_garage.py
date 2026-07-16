@@ -42,7 +42,10 @@ class ParkingSpot:
         TODO: implement the sizing rules described in the README —
         a vehicle can use a spot of its own size or larger.
         """
-        raise NotImplementedError
+
+        if not self.is_occupied and self.size.value >= vehicle.size.value:
+            return True
+        return False
 
     def occupy(self, vehicle):
         self.vehicle = vehicle
@@ -64,6 +67,10 @@ class Ticket:
     # TODO: you may end up wanting a method here to mark the ticket
     # closed out (exit_time set) when the vehicle unparks. Or you might
     # decide ParkingGarage should own that instead — your call.
+
+    def close(self, time):
+        self.spot.vacate()
+        self.exit_time = time
 
 
 class ParkingGarage:
@@ -93,7 +100,35 @@ class ParkingGarage:
         vehicle can legally use — see can_fit and the README.
         Decide what should happen if no spot is available.
         """
-        raise NotImplementedError
+
+        # i have a list of spots
+        # find the best fit
+        # occupy
+        # return Ticket
+
+
+
+        best_fit = None
+
+        for spot in self.spots:
+            if spot.can_fit(vehicle):
+                best_fit = spot
+                break
+              
+        
+        if not best_fit:
+            raise Exception("No spot available for this vehicle")
+        
+        for spot in self.spots:
+            if spot.can_fit(vehicle):
+                if spot.size.value < best_fit.size.value:
+                    best_fit = spot
+        
+        best_fit.occupy(vehicle)
+        ticket = Ticket(vehicle, best_fit, self._time_fn())
+        self._active_tickets[ticket.ticket_id] = ticket
+        return ticket
+        
 
     def unpark_vehicle(self, ticket):
         """Free the spot associated with `ticket` and return the fee owed.
@@ -101,7 +136,22 @@ class ParkingGarage:
         TODO: use self._time_fn() to determine how long the vehicle was
         parked, and RATE_PER_HOUR (or your own pricing) to compute the fee.
         """
-        raise NotImplementedError
+
+        # spot = ticket.spot
+        # spot.vacate()
+
+        ticket.close(self._time_fn())
+
+        time_occupied = (ticket.exit_time - ticket.entry_time) / 3600
+
+        hourly_rate = self.RATE_PER_HOUR[ticket.spot.size]
+
+        total_rate = time_occupied * hourly_rate
+
+        return total_rate
+
+
+        # raise NotImplementedError
 
     def available_spot_count(self, size=None):
         """Return the number of free spots.
@@ -109,4 +159,16 @@ class ParkingGarage:
         TODO: if `size` is given, only count free spots whose size is
         exactly `size` (not "fits" — an exact match on spot.size).
         """
-        raise NotImplementedError
+
+        count = 0
+        for spot in self.spots:
+            if size and spot.size.value == size.value and not spot.is_occupied:
+                count += 1
+            elif not size:
+                if not spot.is_occupied:
+                    count += 1
+    
+        return count
+
+
+        # raise NotImplementedError
