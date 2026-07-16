@@ -26,10 +26,17 @@ class Member:
         TODO: implement this — should be a simple comparison against
         len(self.checked_out_isbns).
         """
-        raise NotImplementedError
+
+        return len(self.checked_out_isbns) == self.MAX_BOOKS_PER_MEMBER
+
+
+        # raise NotImplementedError
 
     def has_checked_out(self, isbn):
         return isbn in self.checked_out_isbns
+    
+    def checkout_isbn(self, isbn):
+        self.checked_out_isbns.append(isbn)
 
 
 class Library:
@@ -44,7 +51,11 @@ class Library:
 
         TODO: decide what to return when the ISBN isn't in the catalog.
         """
-        raise NotImplementedError
+
+        return self.catalog.get(isbn)
+        # if not book:
+        #     return None
+        # raise NotImplementedError
 
     def checkout_book(self, member, isbn):
         """Check out a copy of the given title for `member`, if allowed.
@@ -56,7 +67,27 @@ class Library:
         - the member must not already have this title checked out
         Decide how to signal each failure case.
         """
-        raise NotImplementedError
+        if member.has_reached_limit():
+            raise Exception("member at limit")
+        
+        book = self.find_book(isbn)
+        if not book:
+            raise Exception("Book does not exist")
+        
+        if book.available_copies == 0:
+            raise Exception("No more copies available")
+        
+        if member.has_checked_out(isbn):
+            raise Exception("Already checked this out")
+        
+        if book.available_copies > 0 and book.available_copies <= book.total_copies:
+            # checkout
+            book.available_copies -= 1
+            member.checkout_isbn(isbn)
+        else:
+            raise Exception("Error")
+
+        # raise NotImplementedError
 
     def return_book(self, member, isbn):
         """Return the member's copy of the given title.
@@ -65,4 +96,13 @@ class Library:
         from the member's checked-out list. Decide what should happen
         if the member never had this title checked out.
         """
-        raise NotImplementedError
+
+        
+        book = self.catalog.get(isbn)
+        member.checked_out_isbns.remove(isbn)
+        if not book:
+            raise Exception("Book doesn't exist")
+        book.available_copies += 1
+
+
+        # raise NotImplementedError
