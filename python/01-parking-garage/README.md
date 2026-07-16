@@ -39,7 +39,7 @@ I haven't specified a pricing model. There's a stubbed `RATE_PER_HOUR` dict on `
 ## Running the tests
 
 ```bash
-source ../.venv/bin/activate   # from inside this folder
+source ../../.venv/bin/activate   # from inside this folder
 pytest test_parking_garage.py -v
 ```
 

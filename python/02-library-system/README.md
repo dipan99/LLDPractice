@@ -37,7 +37,7 @@ I've deliberately left open exactly *how* you signal failure cases (exceptions v
 ## Running the tests
 
 ```bash
-source ../.venv/bin/activate   # from inside this folder
+source ../../.venv/bin/activate   # from inside this folder
 pytest test_library_system.py -v
 ```
 
