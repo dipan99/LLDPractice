@@ -6,5 +6,6 @@
   },
   "editor.suggestOnTriggerCharacters": true,
   "editor.inlineSuggest.enabled": false,
-  "editor.wordBasedSuggestions": "matchingDocuments"
+  "editor.wordBasedSuggestions": "matchingDocuments",
+  "chatgpt.commentCodeLensEnabled": false
 }

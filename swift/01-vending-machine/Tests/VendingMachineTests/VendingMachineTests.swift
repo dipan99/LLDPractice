@@ -64,12 +64,12 @@ final class VendingMachineTests: XCTestCase {
         XCTAssertEqual(machine.product(forCode: "A2")?.quantity, 1)
     }
 
-    func testCancelTransactionRefundsAndResetsBalance() {
+    func testCancelTransactionRefundsAndResetsBalance() throws {
         let machine = makeMachine()
         machine.insertCoin(.quarter)
         machine.insertCoin(.dime)
 
-        let refunded = machine.cancelTransaction()
+        let refunded = try machine.cancelTransaction()
 
         XCTAssertEqual(refunded, 35)
         XCTAssertEqual(machine.insertedAmountInCents, 0)

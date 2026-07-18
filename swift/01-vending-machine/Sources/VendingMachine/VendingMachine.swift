@@ -1,5 +1,15 @@
 import Foundation
 
+/// Placeholder error thrown by stubbed-out methods so a test run can
+/// report per-test pass/fail instead of crashing the whole process.
+struct UnimplementedError: Error {}
+
+enum ProductError : Error {
+    case productNotFound
+    case outOfStock
+    case insufficientFunds
+}
+
 public enum Coin: Int, CaseIterable {
     case nickel = 5
     case dime = 10
@@ -45,13 +55,38 @@ public final class VendingMachine {
     /// running total). Decide how each case should be signaled to
     /// the caller.
     public func selectProduct(code: String) throws -> Int {
-        fatalError("TODO: implement product selection")
+        // fatalError("TODO: implement product selection")
+
+
+        guard let product = slots[code] else {
+            throw ProductError.productNotFound
+        }
+
+        if product.quantity == 0 {
+            throw ProductError.outOfStock
+        }
+
+        if insertedAmountInCents < product.priceInCents {
+            throw ProductError.insufficientFunds
+        } else {
+            slots[code]?.quantity -= 1
+            let change: Int = insertedAmountInCents - product.priceInCents
+            insertedAmountInCents = 0
+            return change
+        }
+
+        return 0
+
     }
 
     /// Cancel the current transaction.
-    public func cancelTransaction() -> Int {
-        let refund = insertedAmountInCents
+    ///
+    /// TODO: refund whatever has been inserted so far and reset the
+    /// running total for the next customer.
+    public func cancelTransaction() throws -> Int {
+        // throw UnimplementedError()
+        let amountToReturn = insertedAmountInCents
         insertedAmountInCents = 0
-        return refund
+        return amountToReturn
     }
 }
